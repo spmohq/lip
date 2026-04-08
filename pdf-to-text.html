@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro PDF Text Extractor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --border: #e5e7eb;
+            --textarea-bg: #1e293b;
+            --textarea-text: #f1f5f9;
+        }
+
+        /* Dark Mode Colors */
+        body.dark-mode {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --textarea-bg: #000000;
+            --textarea-text: #34d399; /* Matrix-style green for dark mode contrast */
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; }
+
+        /* Toggle Switch Styling */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        .upload-zone {
+            border: 2px dashed var(--border);
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(0,0,0,0.02);
+            margin-bottom: 20px;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--secondary); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+
+        #progress-container {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 10px;
+            margin: 15px 0;
+            display: none;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        #output-area {
+            width: 100%;
+            height: 450px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre;
+            overflow: auto;
+            background: var(--textarea-bg);
+            color: var(--textarea-text);
+            box-sizing: border-box;
+        }
+
+        .status-bar {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>PDF Extractor</h1>
+        <div class="theme-switch-wrapper">
+            <span>Dark Mode</span>
+            <label class="theme-switch">
+                <input type="checkbox" id="dark-mode-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+        <input type="file" id="file-input" accept="application/pdf" style="display:none">
+        <p id="file-label" style="margin:0; font-weight:500;">Click to select or drag PDF file here</p>
+        <p style="margin:5px 0 0 0; font-size:0.8rem; color:var(--text-muted);">Layout-aware text extraction</p>
+    </div>
+
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <div class="controls">
+        <button id="extract-btn" class="btn-primary" disabled>Extract Text</button>
+        <button id="copy-btn" class="btn-outline" style="display:none">Copy Text</button>
+        <button id="save-btn" class="btn-success" style="display:none">Save as .txt</button>
+    </div>
+
+    <textarea id="output-area" readonly placeholder="The structured text will appear here..."></textarea>
+    
+    <div class="status-bar" id="status-text">Ready</div>
+</div>
+
+<script>
+    // Initialize PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const fileInput = document.getElementById('file-input');
+    const extractBtn = document.getElementById('extract-btn');
+    const copyBtn = document.getElementById('copy-btn');
+    const saveBtn = document.getElementById('save-btn');
+    const outputArea = document.getElementById('output-area');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const statusText = document.getElementById('status-text');
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+    // --- DARK MODE LOGIC ---
+    darkModeToggle.addEventListener('change', () => {
+        document.body.classList.toggle('dark-mode');
+    });
+
+    // --- FILE HANDLING ---
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            document.getElementById('file-label').textContent = file.name;
+            extractBtn.disabled = false;
+            statusText.textContent = "File loaded. Ready to extract.";
+        }
+    });
+
+    // --- EXTRACTION LOGIC ---
+    extractBtn.addEventListener('click', async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        outputArea.value = '';
+        progressContainer.style.display = 'block';
+        extractBtn.disabled = true;
+        saveBtn.style.display = 'none';
+        copyBtn.style.display = 'none';
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            let fullText = '';
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+                statusText.textContent = `Processing Page ${i} of ${pdf.numPages}...`;
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                
+                // Sort blocks by Y position (top-to-bottom), then X (left-to-right)
+                const items = textContent.items.sort((a, b) => {
+                    if (Math.abs(a.transform[5] - b.transform[5]) < 5) {
+                        return a.transform[4] - b.transform[4];
+                    }
+                    return b.transform[5] - a.transform[5];
+                });
+
+                let pageText = '';
+                let lastY = -1;
+
+                for (let item of items) {
+                    // New line detection
+                    if (lastY !== -1 && Math.abs(item.transform[5] - lastY) > 5) {
+                        pageText += '\n';
+                    }
+                    pageText += item.str;
+                    lastY = item.transform[5];
+                }
+
+                fullText += `--- Page ${i} ---\n${pageText}\n\n`;
+                progressBar.style.width = `${(i / pdf.numPages) * 100}%`;
+            }
+
+            outputArea.value = fullText;
+            statusText.textContent = `Success! ${pdf.numPages} pages extracted.`;
+            copyBtn.style.display = 'flex';
+            saveBtn.style.display = 'flex';
+
+        } catch (err) {
+            console.error(err);
+            statusText.textContent = "Error: " + err.message;
+        } finally {
+            extractBtn.disabled = false;
+        }
+    });
+
+    // --- COPY FUNCTION ---
+    copyBtn.addEventListener('click', () => {
+        outputArea.select();
+        document.execCommand('copy');
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = originalText, 2000);
+    });
+
+    // --- SAVE TO TXT FUNCTION ---
+    saveBtn.addEventListener('click', () => {
+        const text = outputArea.value;
+        if (!text) return;
+
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        
+        // Generate filename based on original file or timestamp
+        const originalName = fileInput.files[0] ? fileInput.files[0].name.replace('.pdf', '') : 'extracted_text';
+        a.href = url;
+        a.download = `${originalName}_extracted.txt`;
+        
+        document.body.appendChild(a);
+        a.click();
+        
+        // Cleanup
+        setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
+    });
+</script>
+
+</body>
+</html>
