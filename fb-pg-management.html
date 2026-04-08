@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FB Monetization Management - Strategy Genie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient-start: #064e3b; 
+      --bg-gradient-end: #020617;
+      --card-bg: rgba(16, 185, 129, 0.05);
+      --card-border: rgba(16, 185, 129, 0.2);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-heading: #ffffff;
+      --accent-primary: #10b981; 
+      --accent-hover: #34d399;
+      --accent-success: #059669;
+      --code-bg: rgba(0, 0, 0, 0.4);
+      --shadow-color: rgba(0, 0, 0, 0.5);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      flex-grow: 1;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--accent-primary);
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* Prompt Card Styles */
+    .prompt-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      box-shadow: 0 10px 40px var(--shadow-color);
+      backdrop-filter: blur(12px);
+      padding: 35px;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+    .prompt-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--accent-primary);
+    }
+    .prompt-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .prompt-label::after {
+      content: "";
+      height: 1px;
+      flex-grow: 1;
+      background: var(--card-border);
+    }
+    .prompt-text {
+      background-color: var(--code-bg);
+      padding: 24px;
+      border-radius: 12px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 0.95rem;
+      color: #f0fdfa;
+      line-height: 1.5;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      max-height: 800px;
+      overflow-y: auto;
+    }
+    
+    /* Scrollbar Styling */
+    .prompt-text::-webkit-scrollbar {
+      width: 8px;
+    }
+    .prompt-text::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .prompt-text::-webkit-scrollbar-thumb {
+      background: var(--card-border);
+      border-radius: 10px;
+    }
+
+    /* Button Styles */
+    .copy-button {
+      align-self: flex-end;
+      padding: 12px 24px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #042f2e;
+      background-color: var(--accent-primary);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .copy-button:hover {
+      background-color: var(--accent-hover);
+      box-shadow: 0 5px 15px rgba(45, 212, 191, 0.3);
+    }
+    .copy-button.copied {
+      background-color: var(--accent-success);
+      color: #fff;
+    }
+    .icon { width: 18px; height: 18px; }
+    .copied-icon { display: none; }
+    .copy-button.copied .copy-icon { display: none; }
+    .copy-button.copied .copied-icon { display: inline-block; }
+
+    footer {
+        margin-top: 60px;
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        padding-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Facebook’s Content Monetization Program Page Management</h1>
+      <p class="subtitle">Complete Strategy Master Prompt</p>
+    </header>
+
+    <main>
+      <div class="prompt-card">
+        <div class="prompt-label">The Master Prompt</div>
+        <pre id="mainPrompt" class="prompt-text">A. Topic:
+
+Facebook’s Content Monetization Program
+
+B. Niche/Audience:
+
+An aspirant digital creator who wants to earn money with Facebook's content monetization program cannot understand what to post next.
+
+C. Blog post:
+with LinkedIn SEO Article Writer Prompt
+Input = Prompts I wat to sell
+
+D. Supply of Contents:
+
+site:[domain dot tld] "how I made money from"
+site:[domain dot tld] "how I made" "Facebook’s Content Monetization Program"
+site:[domain dot tld] "how I made money from" "Facebook’s Content Monetization Program"
+site:[domain dot tld] "what worked for me" "Facebook’s Content Monetization Program"
+site:[domain dot tld] "my strategy" "Facebook’s Content Monetization Program"
+
+https://spmohq.github.io/lip/ss-for-fb-digital-creator.html
+
+E. Post's Image:
+
+https://spmohq.github.io/k11/ai-image-prompt-genie.html
+
+https://spmohq.github.io/lip/image-for-fb-text.html
+
+F. Facebook pages/groups Finder Prompt:
+ 
+I’m interested in "Facebook’s Content Monetization Program" and aspirant digital creator who earns or wants to earn money with Facebook's content monetization program. 
+What are potential pages, content creators, or Facebook groups I should join and follow? 
+Search Facebook and give me direct links to those profiles and groups  
+
+G. Prompts for Posts:
+
+1. Facebook Page Niche Identifying Prompt:
+
+“I'm an aspiring creator looking to pick the right niche for building and monetizing Facebook pages. To help me decide, I need to evaluate which of the following topics fit best within the three evergreen markets: health, wealth, and relationships. 
+Here are the topics I'm considering: [ parenting, fatherhood, motherhood, relationships] 
+Please provide a detailed analysis of each topic by: 
+Identifying which of the three markets each topic connects to most strongly. 
+Listing the pros and cons of building Facebook pages around each topic, focusing on things like audience size, competition, engagement potential, and monetization options (ad breaks, affiliate links, digital products, etc.). 
+Ranking the topics by how easy it would be to grow pages, attract followers, and earn from them over time. 
+This will help me understand which niche offers the best mix of growth, engagement, and long-term income potential for Facebook page monetization.” 
+
+2. Facebook Content Pillar Prompt:
+
+My niche is [Insert Your Niche]. Based on that, give me 3 to 5 content pillars I can build my brand around. For each pillar, include 3–5 subtopics I can create content about. 
+
+3. Hook Optimizer Prompt:
+ 
+Become an expert on writing hooks on Facebook page. 
+I am about to post again, and I need to come up with an extremely effective hook for it. This is my original hook: [Your weak hook]
+Give me 3 high-quality ideas to make this hook more curiosity-driven, extremely bold, and impossible to ignore. Use numbers, shocking stats, bold opinions and controversial takes. 
+
+4. Content Idea Generator Prompt:
+ 
+Become an expert on generating viral content ideas for Facebook pages. 
+My target audience consists of [Your Target Audience]. Think of the most common and significant pain points they typically face. 
+Now, based on the common and significant pain points of my target audience, generate a list of content ideas that address these challenges. Include topics that would resonate with their specific needs, painful problems and interests. 
+
+5. CTA Enhancer Prompt:
+ 
+Rewrite this CTA to be more persuasive, urgent, and action-driven, making sure the viewer must take action. 
+[Insert Your CTA here]. 
+
+6. Facebook pages/groups Finder Prompt:
+ 
+I’m interested in [Insert Your Niche Here]. 
+What are potential pages, content creators, or Facebook groups I should join and follow? 
+Search Facebook and give me direct links to those profiles and groups 
+
+7. Engagement Prompt: 
+
+Create 20 debate-starting questions for [insert niche or content topic] that spark discussion and encourage shares. Example: 'Coffee vs. tea: Which boosts productivity more?'
+
+8. Facebook Page Bio Builder Prompt:
+ 
+Help me write a one-line Facebook page bio. 
+I post about [Insert Niche] for [types of audience] + [CTA] 
+Give me 3 clear options under 120 characters. Make them sharp, confident, and authentic. 
+
+9. Trend Monetization Multi-Angle Framework Prompt: 
+
+Take this trending topic: [Insert Trend/Topic Here]. 
+Generate a 4-post sequence that maximizes engagement. 
+1. The Spark: start it with (breaking, just in): Fast, attention-grabbing post 
+2. Curiosity Gap: Highlight a detail people want to know but leave it incomplete. Encourage guesses. 
+3. Controversy: Introduce a polarizing perspective or comparison. Use numbers, status, to fuel debate. 
+4. Speculation: Predict outcomes or future events. Include unexpected or controversial elements. prompt to keep conversation alive. 
+Posts should be short, punchy, visual-friendly, and fit the platform’s tone. no sentences with question marks
+
+
+10. Paraphrasing Prompt for Any Text:
+ 
+Paraphrase This Text: 
+[Insert text here] 
+Instructions: 
+1. Read the text carefully and understand the main ideas. 
+2. Rewrite it completely in your own words using one of these methods: 
+• Tell-a-Friend: Explain it as if telling a friend. 
+• Chunking: Break it into key phrases, rewrite each, then combine. 
+3. Use different grammar and vocabulary; avoid copying more than 4–5 words in a row. 
+4. Keep all main points, do not add new ideas. 
+5. Include the source or author, e.g., (Author, Year). 
+6. Make sure your version is clear, readable, and matches the meaning of the original. 
+Output: One fully paraphrased version of the text. 
+
+11. Facebook Cover Image Prompt: 
+
+Give me one strong Facebook cover image concept for a personal brand in [Insert Your Niche], based on my bio: [Insert Your Bio]. 
+It should include: 
+• A clear, bold headline that states what I do and why people should follow me. 
+• An optional short subheadline (if it strengthens clarity or authority). 
+• Visual direction: suggest layout, color mood, and 2–3 minimal icons or background ideas that make the message pop without clutter. 
+Keep the design simple, readable, and instantly recognizable even on mobile. 
+
+12. Content Repurposer Prompt:
+ 
+Take this high-performing post and repurpose it into: 
+• Text post (no less than 123 characters and max is 136 characters): [Insert Your Text Here]. 
+
+
+
+Midjourney Image prompts for any subject (Note: you can use these prompts on any image generator out there in the market right now.)
+
+1. Close-up Shot: Focus tight on the subject. Highlight texture, color, and fine detail. Works well for faces, objects, products, animals, or scenery.
+ 
+Prompt:
+ 
+Close-up of [subject], realistic, soft lighting, rich texture, high detail, sharp focus --v 6 --ar 4:5 
+
+2. Mid-angle Shot: Frame the subject from a moderate distance. Enough context to understand the environment without being far away. 
+
+Prompt:
+ 
+Mid-angle shot of [subject], [location or environment], natural light, photorealistic --v 6 
+
+3. Candid Shot: Show the subject in action. Treat it like a moment that was not staged, with human movement or natural motion. 
+
+Prompt:
+ 
+Candid scene of [subject], natural light, lifestyle setting, storytelling composition --v 6
+
+4. Flat Lay or Top-down Shot: Top-down view. Useful for collections, desk setups, outfits, gear, art supplies, or any arrangement. 
+
+Prompt:
+ 
+Top-down shot of [subject], realistic, vibrant, clean composition, taken with an iPhone 17 Pro, casual photo style --v 6 --ar 1:1 
+ 
+5. Upload + Match Prompting: Upload your own reference photo and tell the model to create similar one to it to avoid copyrights issues when posting it on your page. 
+
+Prompt :
+
+[Subject], highly detailed, exact replica, photorealistic, same composition, same colors --iw 3 --v 6 
+
+H. Create First 20 Facebook Posts:
+ 
+Create 20 Facebook posts using the following hook styles. Each post must be short, relatable, and written for high shareability. Avoid hype. Avoid complex words. Make each post feel like real life experience. No emojis. No hashtags. No quotes around the post. Do not repeat ideas. 
+Niche: Facebook’s Content Monetization Program 
+Audience: An aspirant digital creator who wants to earn money with Facebook's content monetization program cannot understand what to post next. 
+Tone: simple, direct, conversational 
+Length: 1 to 3 sentences max 
+Use these hook formats: 
+1. Major cheat code for life  
+2. Life advice  
+3. Hot take  
+4. Unpopular opinion  
+5. Underrated life advice  
+6. Pro tip  
+7. I don’t know who needs to hear this, but  
+8. Facts  
+9. The older I get, the more I realize  
+10. A massive advantage in life  
+11. A mentor once told me  
+12. Underappreciated advice  
+13. A good rule of thumb  
+14. Useful rule of thumb  
+15. A lesson I wish I learned earlier  
+16. Karma says  
+17. Friendly reminder  
+18. Bro to bro  
+19. Sister to sister  
+20. One small adult cheat code I really wish I learned earlier  
+21. Cheat codes about life I know at [age] I wish I knew at [younger age]  
+22. You don't need [popular thing]. You need [better alternative]  
+23. Weird [topic] tip  
+24. Nobody wants to talk about this, but it's the real reason why [problem]  
+25. Everyone is wrong about [topic]. Here's the truth  
+26. You've been lied to about [myth]  
+27. The harsh reality about [belief]  
+28. What no one tells you  
+29. I spent $[amount] to learn this  
+30. If you're a [demographic]  
+31. If you've ever [scenario], this is for you  
+32. [Number] [timeframe] ago: [bad]. Today: [good]  
+33. POV: [scenario]  
+34. PSA  
+35. I'm gonna hold your hand when I tell you this  
+36. A friend of mine used to say  
+37. A general rule of life  
+Make each post specific to the niche, and make them feel personal but do not use "I" unless required by the hook. Focus on relatable everyday moments.</pre>
+        
+        <button class="copy-button" id="copyBtn">
+          <svg class="icon copy-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" /></svg>
+          <svg class="icon copied-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+          <span class="button-text">Copy Master Prompt</span>
+        </button>
+      </div>
+    </main>
+
+    <footer>
+        <p>Copyright &copy; <script>document.write(new Date().getFullYear())</script> Social Strategy Architect. All Rights Reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    const copyBtn = document.getElementById('copyBtn');
+    const displayArea = document.getElementById('mainPrompt');
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(displayArea.textContent).then(() => {
+        const btnText = copyBtn.querySelector('.button-text');
+        const prevText = btnText.textContent;
+        btnText.textContent = 'Copied!';
+        copyBtn.classList.add('copied');
+        
+        setTimeout(() => {
+          btnText.textContent = prevText;
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+  </script>
+
+</body>
+</html>
