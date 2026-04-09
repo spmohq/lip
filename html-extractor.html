@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Content Extractor</title>
+    <style>
+        :root {
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --primary: #8b5cf6; /* Purple theme for HTML tool */
+            --primary-hover: #7c3aed;
+            --secondary: #10b981;
+            --border: #e5e7eb;
+            --textarea-bg: #ffffff;
+            --textarea-text: #1f2937;
+        }
+
+        body.dark-mode {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --textarea-bg: #0f172a;
+            --textarea-text: #38bdf8; /* Blue-ish text for dark mode */
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; }
+
+        /* Toggle Switch Styling */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        .upload-zone {
+            border: 2px dashed var(--border);
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(0,0,0,0.02);
+            margin-bottom: 20px;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--secondary); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+
+        #output-area {
+            width: 100%;
+            height: 450px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow: auto;
+            background: var(--textarea-bg);
+            color: var(--textarea-text);
+            box-sizing: border-box;
+        }
+
+        .status-bar {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .settings {
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>HTML Extractor</h1>
+        <div class="theme-switch-wrapper">
+            <span>Dark Mode</span>
+            <label class="theme-switch">
+                <input type="checkbox" id="dark-mode-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+        <input type="file" id="file-input" accept=".html,.htm" style="display:none">
+        <p id="file-label" style="margin:0; font-weight:500;">Click to select or drag HTML file here</p>
+        <p style="margin:5px 0 0 0; font-size:0.8rem; color:var(--text-muted);">Extracts readable text without scripts/tags</p>
+    </div>
+
+    <div class="settings">
+        <label><input type="checkbox" id="keep-links" checked> Show Link URLs</label>
+        <label><input type="checkbox" id="keep-headings" checked> Format Headings</label>
+    </div>
+
+    <div class="controls">
+        <button id="extract-btn" class="btn-primary" disabled>Extract Text</button>
+        <button id="copy-btn" class="btn-outline" style="display:none">Copy Text</button>
+        <button id="save-btn" class="btn-success" style="display:none">Save as .txt</button>
+    </div>
+
+    <textarea id="output-area" readonly placeholder="The clean text from your HTML file will appear here..."></textarea>
+    
+    <div class="status-bar" id="status-text">Ready</div>
+</div>
+
+<script>
+    const fileInput = document.getElementById('file-input');
+    const extractBtn = document.getElementById('extract-btn');
+    const copyBtn = document.getElementById('copy-btn');
+    const saveBtn = document.getElementById('save-btn');
+    const outputArea = document.getElementById('output-area');
+    const statusText = document.getElementById('status-text');
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+    // Theme Toggle
+    darkModeToggle.addEventListener('change', () => {
+        document.body.classList.toggle('dark-mode');
+    });
+
+    // File Input Change
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            document.getElementById('file-label').textContent = file.name;
+            extractBtn.disabled = false;
+            statusText.textContent = "HTML file loaded.";
+        }
+    });
+
+    // Extraction Logic
+    extractBtn.addEventListener('click', () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const htmlContent = e.target.result;
+            const cleanText = parseHTML(htmlContent);
+            outputArea.value = cleanText;
+            
+            statusText.textContent = "Extraction complete!";
+            copyBtn.style.display = 'flex';
+            saveBtn.style.display = 'flex';
+        };
+        reader.readAsText(file);
+    });
+
+    function parseHTML(html) {
+        // Use DOMParser to parse the string
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // 1. Remove non-visible/non-content elements
+        const toRemove = doc.querySelectorAll('script, style, nav, footer, iframe, noscript, header');
+        toRemove.forEach(el => el.remove());
+
+        const keepLinks = document.getElementById('keep-links').checked;
+        const keepHeadings = document.getElementById('keep-headings').checked;
+
+        // 2. Recursive function to traverse and format
+        function walk(node) {
+            let text = "";
+            
+            if (node.nodeType === Node.TEXT_NODE) {
+                return node.textContent.replace(/\s+/g, ' ');
+            }
+
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                const tagName = node.tagName.toLowerCase();
+                
+                // Add newlines for block elements
+                const isBlock = ['p', 'div', 'section', 'article', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(tagName);
+                
+                let prefix = "";
+                let suffix = "";
+
+                if (keepHeadings && /^h[1-6]$/.test(tagName)) {
+                    const level = tagName.substring(1);
+                    prefix = "\n" + "#".repeat(level) + " ";
+                    suffix = "\n";
+                } else if (tagName === 'li') {
+                    prefix = "\n • ";
+                } else if (tagName === 'p' || tagName === 'div') {
+                    prefix = "\n";
+                }
+
+                // Handle Links
+                let linkRef = "";
+                if (tagName === 'a' && keepLinks && node.getAttribute('href')) {
+                    const href = node.getAttribute('href');
+                    if (href.startsWith('http')) linkRef = ` [${href}]`;
+                }
+
+                let childrenText = "";
+                for (let child of node.childNodes) {
+                    childrenText += walk(child);
+                }
+
+                return prefix + childrenText + linkRef + suffix;
+            }
+            return "";
+        }
+
+        const result = walk(doc.body);
+        
+        // Clean up excessive whitespace and multiple newlines
+        return result
+            .replace(/[ \t]+/g, ' ')      // collapse horizontal spaces
+            .replace(/\n\s*\n\s*\n/g, '\n\n') // collapse triple newlines to double
+            .trim();
+    }
+
+    // Copy to Clipboard
+    copyBtn.addEventListener('click', () => {
+        outputArea.select();
+        document.execCommand('copy');
+        const oldText = copyBtn.innerText;
+        copyBtn.innerText = "✓ Copied";
+        setTimeout(() => copyBtn.innerText = oldText, 2000);
+    });
+
+    // Save as TXT
+    saveBtn.addEventListener('click', () => {
+        const blob = new Blob([outputArea.value], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const name = fileInput.files[0] ? fileInput.files[0].name.replace('.html', '').replace('.htm', '') : 'extracted';
+        a.href = url;
+        a.download = `${name}_content.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+</script>
+
+</body>
+</html>
